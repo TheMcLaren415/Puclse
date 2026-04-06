@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Pulse Visuals UI</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: url("https://images.unsplash.com/photo-1608889175123-8ee362201f81") no-repeat center/cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* TOP BAR */
+.topbar {
+    position: absolute;
+    top: 40px;
+    width: 700px;
+    padding: 15px 20px;
+    border-radius: 18px;
+    backdrop-filter: blur(20px);
+    background: rgba(20,20,30,0.6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+/* TABS */
+.tabs {
+    display: flex;
+    gap: 25px;
+}
+
+.tab {
+    color: #aaa;
+    cursor: pointer;
+    position: relative;
+    transition: 0.3s;
+}
+
+.tab.active {
+    color: white;
+}
+
+.tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #8a7dff;
+    box-shadow: 0 0 10px #8a7dff;
+}
+
+/* SEARCH */
+.search {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 10px;
+    color: white;
+    outline: none;
+}
+
+/* MAIN PANEL */
+.panel {
+    width: 700px;
+    height: 350px;
+    margin-top: 100px;
+    border-radius: 20px;
+    backdrop-filter: blur(30px);
+    background: rgba(15,15,25,0.65);
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+/* FLOATING MUSIC PLAYER */
+.player {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    padding: 10px 15px;
+    border-radius: 15px;
+    backdrop-filter: blur(20px);
+    background: rgba(20,20,30,0.7);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+}
+
+/* SMALL STATUS */
+.status {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    backdrop-filter: blur(20px);
+    background: rgba(20,20,30,0.6);
+    color: #ccc;
+    font-size: 12px;
+}
+
+/* HOVER EFFECT */
+.player:hover,
+.topbar:hover,
+.panel:hover {
+    box-shadow: 0 0 30px rgba(138,125,255,0.3);
+}
+</style>
+</head>
+
+<body>
+
+<!-- MUSIC PLAYER -->
+<div class="player">
+    <div>
+        <div style="font-size:12px;">Alan</div>
+        <div style="font-size:10px;color:#aaa;">Different</div>
+    </div>
+    <div class="controls">
+        ⏮ ⏯ ⏭
+    </div>
+</div>
+
+<!-- STATUS -->
+<div class="status">Online</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <div class="tabs">
+        <div class="tab active">Visuals</div>
+        <div class="tab">HUD</div>
+        <div class="tab">Outline</div>
+    </div>
+    <input class="search" placeholder="Search">
+</div>
+
+<!-- MAIN -->
+<div class="panel"></div>
+
+</body>
+</html>
