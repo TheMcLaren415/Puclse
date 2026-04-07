@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Pulse Visuals - Classic Gradient</title>
+    <style>
+        :root {
+            --accent: #7d5fff;
+            --bg-dark: #050505;
+            --card-bg: #16161d;
+            --text-main: #ffffff;
+            --text-dim: #5c5c6d;
+            --border: #22222e;
+            /* Тот самый градиент: сверху темно, снизу фиолетовый отсвет */
+            --panel-gradient: linear-gradient(180deg, #111116 0%, #111116 65%, #1b1631 100%);
+        }
+
+        body {
+            background: #050505;
+            color: var(--text-main);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* РАЗМЕР ИЗ ПЕРВОГО КОДА: 820x480 */
+        .window {
+            width: 820px;
+            height: 480px;
+            background: var(--panel-gradient);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+        }
+
+        .header { 
+            padding: 20px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .tabs { display: flex; gap: 15px; font-size: 14px; color: var(--text-dim); }
+        .tabs span { cursor: pointer; transition: 0.2s; }
+        .tabs span.active { color: var(--text-main); font-weight: bold; }
+
+        .search-area {
+            background: #1a1a23;
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #2a2a3a;
+        }
+        
+        .search-area input {
+            background: none; border: none; color: white; 
+            outline: none; width: 140px; margin-left: 8px; font-size: 13px;
+        }
+
+        .content { 
+            padding: 0 30px 20px 30px; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            overflow-y: auto; 
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 14px 20px; 
+            border-radius: 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        /* ПЕРЕКЛЮЧАТЕЛИ ИЗ ПРОШЛОГО КОДА */
+        .tog { 
+            width: 38px; height: 20px; background: #2a2a3a; 
+            border-radius: 15px; position: relative; cursor: pointer; 
+            transition: 0.3s;
+        }
+        .tog.active { background: var(--accent); }
+        .tog::after { 
+            content: ''; position: absolute; width: 14px; height: 14px; 
+            background: white; border-radius: 50%; top: 3px; left: 3px; transition: 0.2s;
+        }
+        .tog.active::after { left: 21px; }
+
+        /* ДОК */
+        .dock { 
+            position: absolute; bottom: 20px; left: 50%; 
+            transform: translateX(-50%); background: rgba(15, 15, 20, 0.85); 
+            padding: 10px; border-radius: 16px; display: flex; gap: 10px;
+            border: 1px solid rgba(125, 95, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .dock-btn { 
+            width: 40px; height: 40px; background: #1c1c26; 
+            border-radius: 10px; display: flex; align-items: center; 
+            justify-content: center; cursor: pointer; opacity: 0.5; transition: 0.3s;
+        }
+        .dock-btn.active { 
+            background: var(--accent); 
+            opacity: 1; 
+            box-shadow: 0 0 15px rgba(125, 95, 255, 0.4);
+        }
+
+        .config-item { grid-column: span 2; }
+        .dl-icon { cursor: pointer; opacity: 0.7; }
+        .dl-icon:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="window">
+        <div class="header">
+            <div id="tab-title" class="tabs">
+                </div>
+            <div class="search-area">
+                <span>🔍</span>
+                <input type="text" id="main-search" placeholder="Поиск">
+            </div>
+        </div>
+
+        <div class="content" id="main-list">
+            </div>
+
+        <div class="dock">
+            <div class="dock-btn active" onclick="setMode('visuals', 0)">⚙️</div>
+            <div class="dock-btn" onclick="setMode('hud', 1)">🖼️</div>
+            <div class="dock-btn" onclick="setMode('configs', 2)">📄</div>
+        </div>
+    </div>
+
+    <script>
+        const db = {
+            visuals: [
+                { name: "Animations", state: true }, { name: "Target ESP", state: true },
+                { name: "Trails", state: true }, { name: "World Customizer", state: true },
+                { name: "Full Bright", state: true }, { name: "Nimb", state: true },
+                { name: "Particles", state: true }, { name: "China Hat", state: true }
+            ],
+            hud: [
+                { name: "Watermark", state: true }, { name: "Effect Notify", state: true },
+                { name: "Armor HUD", state: true }, { name: "Target HUD", state: true }
+            ],
+            configs: [
+                { name: "Default Profile", isCfg: true },
+                { name: "Legit Settings", isCfg: true }
+            ]
+        };
+
+        let currentMode = 'visuals';
+
+        function render() {
+            const list = document.getElementById('main-list');
+            const title = document.getElementById('tab-title');
+            const query = document.getElementById('main-search').value.toLowerCase();
+            list.innerHTML = '';
+
+            // Шапка вкладок (Visuals / HUD / Configs)
+            title.innerHTML = `
+                <span class="${currentMode==='visuals'?'active':''}" onclick="setMode('visuals',0)">Visuals</span> / 
+                <span class="${currentMode==='hud'?'active':''}" onclick="setMode('hud',1)">HUD</span> / 
+                <span class="${currentMode==='configs'?'active':''}" onclick="setMode('configs',2)">Configs</span>
+            `;
+
+            // Глобальный поиск или текущая категория
+            let data = query === "" ? db[currentMode] : [...db.visuals, ...db.hud, ...db.configs].filter(i => i.name.toLowerCase().includes(query));
+
+            data.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = item.isCfg ? 'card config-item' : 'card';
+                
+                const control = item.isCfg 
+                    ? '<div class="dl-icon">📥</div>' 
+                    : `<div class="tog ${item.state ? 'active' : ''}" onclick="toggleState('${item.name}')"></div>`;
+
+                card.innerHTML = `<span>${item.name}</span> ${control}`;
+                list.appendChild(card);
+            });
+        }
+
+        function toggleState(name) {
+            ['visuals', 'hud'].forEach(cat => {
+                const item = db[cat].find(i => i.name === name);
+                if (item) item.state = !item.state;
+            });
+            render();
+        }
+
+        function setMode(mode, idx) {
+            currentMode = mode;
+            document.querySelectorAll('.dock-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+            render();
+        }
+
+        document.getElementById('main-search').oninput = render;
+        render();
+    </script>
+</body>
+</html>
