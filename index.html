@@ -2,24 +2,23 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Pulse Visuals - Fix Search</title>
+    <title>Pulse Visuals - Global Search</title>
     <style>
         :root {
-            --panel-bg: #111116;
-            --card-bg: #16161d;
             --accent: #7d5fff;
-            --text-main: #ffffff;
+            --bg: #0b0b0f;
+            --panel: #111116;
+            --card: #16161d;
             --text-dim: #5c5c6d;
-            --border: #22222e;
         }
 
         body {
-            background: #050505;
-            color: var(--text-main);
+            background: radial-gradient(circle, #1a1a2e 0%, #050505 100%);
+            color: white;
             font-family: 'Segoe UI', sans-serif;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             margin: 0;
         }
@@ -27,184 +26,222 @@
         .window {
             width: 820px;
             height: 480px;
-            background: var(--panel-bg);
-            border-radius: 14px;
-            border: 1px solid var(--border);
+            background: var(--panel);
+            border-radius: 16px;
+            border: 1px solid #1f1f2e;
             display: flex;
             flex-direction: column;
             position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
         }
 
-        .header { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
-        
+        .header {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .tabs { display: flex; gap: 15px; font-size: 14px; color: var(--text-dim); }
-        .tabs span { cursor: pointer; }
-        .tabs span.active { color: var(--text-main); font-weight: bold; }
+        .tabs span { cursor: pointer; transition: 0.2s; }
+        .tabs span.active { color: white; font-weight: bold; }
 
         .search-area {
             background: #1a1a23;
-            padding: 6px 12px;
-            border-radius: 8px;
+            padding: 8px 15px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             border: 1px solid #2a2a3a;
         }
-        
+
         .search-area input {
-            background: none; border: none; color: white; 
-            outline: none; width: 140px; margin-left: 8px;
+            background: none; border: none; color: white;
+            outline: none; width: 180px; margin-left: 10px;
         }
 
-        .content { 
-            padding: 0 30px 20px 30px; 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            overflow-y: auto; 
+        .content {
+            padding: 0 30px 30px 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            overflow-y: auto;
         }
 
-        .card { 
-            background: var(--card-bg); 
-            padding: 14px 20px; 
-            border-radius: 10px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
+        /* Карточка результата */
+        .card {
+            background: var(--card);
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card:hover { border-color: #313145; background: #1c1c26; }
+
+        .category-tag {
+            font-size: 9px;
+            text-transform: uppercase;
+            background: rgba(125, 95, 255, 0.2);
+            color: var(--accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            display: inline-block;
         }
 
         /* Переключатель */
-        .tog { 
-            width: 38px; height: 20px; background: #2a2a3a; 
-            border-radius: 15px; position: relative; cursor: pointer; 
+        .switch {
+            width: 38px; height: 20px; background: #2a2a3a;
+            border-radius: 15px; position: relative; cursor: pointer;
         }
-        .tog.active { background: var(--accent); }
-        .tog::after { 
-            content: ''; position: absolute; width: 14px; height: 14px; 
+        .switch.active { background: var(--accent); }
+        .switch::after {
+            content: ''; position: absolute; width: 14px; height: 14px;
             background: white; border-radius: 50%; top: 3px; left: 3px; transition: 0.2s;
         }
-        .tog.active::after { left: 21px; }
+        .switch.active::after { left: 21px; }
 
-        /* Иконка скачать */
-        .dl-icon { 
-            width: 32px; height: 32px; background: #252533; 
-            border-radius: 8px; display: flex; align-items: center; 
-            justify-content: center; cursor: pointer; 
+        /* Док */
+        .dock {
+            position: absolute; bottom: -75px; left: 50%;
+            transform: translateX(-50%); background: #0f0f14;
+            padding: 10px 20px; border-radius: 18px; display: flex; gap: 15px;
+            border: 1px solid #222;
         }
 
-        .dock { 
-            position: absolute; bottom: -70px; left: 50%; 
-            transform: translateX(-50%); background: #0f0f14; 
-            padding: 10px; border-radius: 16px; display: flex; gap: 10px;
-        }
-        
-        .dock-btn { 
-            width: 40px; height: 40px; background: #1c1c26; 
-            border-radius: 10px; display: flex; align-items: center; 
-            justify-content: center; cursor: pointer; opacity: 0.5;
+        .dock-btn {
+            width: 44px; height: 44px; background: #1c1c26;
+            border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; opacity: 0.5; transition: 0.2s;
         }
         .dock-btn.active { background: var(--accent); opacity: 1; }
 
-        .config-item { grid-column: span 2; }
+        .no-results { grid-column: span 2; text-align: center; color: var(--text-dim); margin-top: 40px; }
     </style>
 </head>
 <body>
 
     <div class="window">
         <div class="header">
-            <div id="tab-title" class="tabs">
+            <div id="tabs-ui" class="tabs">
                 </div>
             <div class="search-area">
                 <span>🔍</span>
-                <input type="text" id="main-search" placeholder="Поиск">
+                <input type="text" id="globalSearch" placeholder="Поиск по всем категориям...">
             </div>
         </div>
 
-        <div class="content" id="main-list">
+        <div class="content" id="list-container">
             </div>
 
         <div class="dock">
-            <div class="dock-btn active" onclick="setMode('visuals', 0)">⚙️</div>
-            <div class="dock-btn" onclick="setMode('hud', 1)">🖼️</div>
-            <div class="dock-btn" onclick="setMode('configs', 4)">📄</div>
+            <div class="dock-btn active" onclick="setCategory('visuals')">⚙️</div>
+            <div class="dock-btn" onclick="setCategory('hud')">🖼️</div>
+            <div class="dock-btn" onclick="setCategory('configs')">📄</div>
         </div>
     </div>
 
     <script>
-        const db = {
-            visuals: [
-                { name: "Animations", state: true }, { name: "Target ESP", state: true },
-                { name: "Trails", state: true }, { name: "World Customizer", state: true },
-                { name: "Full Bright", state: true }, { name: "Nimb", state: false },
-                { name: "Particles", state: true }, { name: "China Hit", state: false }
-            ],
-            hud: [
-                { name: "Watermark", state: true }, { name: "Effect Notify", state: true },
-                { name: "Armor HUD", state: false }, { name: "Target HUD", state: false }
-            ],
-            configs: [
-                { name: "Default", date: "10.02 14:28", isCfg: true },
-                { name: "Анимчик • Anim4k", date: "11.02 10:12", isCfg: true },
-                { name: "Флерни • Flerni", date: "12.02 16:12", isCfg: true }
-            ]
-        };
+        // Единая база данных
+        const database = [
+            { id: 'v1', name: "Animations", cat: 'visuals', state: true },
+            { id: 'v2', name: "Target ESP", cat: 'visuals', state: true },
+            { id: 'v3', name: "Trails", cat: 'visuals', state: false },
+            { id: 'v4', name: "Full Bright", cat: 'visuals', state: true },
+            { id: 'v5', name: "China Hat", cat: 'visuals', state: false },
+            { id: 'v6', name: "Block Overlay", cat: 'visuals', state: true },
+            { id: 'h1', name: "Watermark", cat: 'hud', state: true },
+            { id: 'h2', name: "Effect Notify", cat: 'hud', state: true },
+            { id: 'h3', name: "Armor HUD", cat: 'hud', state: false },
+            { id: 'h4', name: "Target HUD", cat: 'hud', state: false },
+            { id: 'c1', name: "Default Profile", cat: 'configs', date: "10.02 14:28" },
+            { id: 'c2', name: "Анимчик • Anim4k", cat: 'configs', date: "11.02 10:12" },
+            { id: 'c3', name: "Флерни • Flerni", cat: 'configs', date: "12.02 16:12" }
+        ];
 
-        let currentMode = 'visuals';
-
-        const searchInput = document.getElementById('main-search');
-        const listContainer = document.getElementById('main-list');
-        const tabTitle = document.getElementById('tab-title');
+        let currentCategory = 'visuals';
 
         function render() {
-            const query = searchInput.value.toLowerCase();
-            listContainer.innerHTML = '';
+            const container = document.getElementById('list-container');
+            const tabsUi = document.getElementById('tabs-ui');
+            const query = document.getElementById('globalSearch').value.toLowerCase();
+            
+            container.innerHTML = '';
 
-            // Рендер вкладок
-            if (currentMode === 'configs') {
-                tabTitle.innerHTML = '<span style="color:white">Конфигурации</span>';
+            // 1. Рисуем вкладки (если поиск пустой)
+            if (query === "") {
+                if (currentCategory === 'configs') {
+                    tabsUi.innerHTML = '<span style="color:white">Конфигурации</span>';
+                } else {
+                    tabsUi.innerHTML = `
+                        <span class="${currentCategory==='visuals'?'active':''}" onclick="setCategory('visuals')">Visuals</span> / 
+                        <span class="${currentCategory==='hud'?'active':''}" onclick="setCategory('hud')">HUD</span>
+                    `;
+                }
             } else {
-                tabTitle.innerHTML = `
-                    <span class="${currentMode==='visuals'?'active':''}" onclick="setMode('visuals',0)">Visuals</span> / 
-                    <span class="${currentMode==='hud'?'active':''}" onclick="setMode('hud',1)">HUD</span>
-                `;
+                tabsUi.innerHTML = `<span style="color:var(--accent)">Результаты поиска: ${query}</span>`;
             }
 
-            // Фильтрация и вывод
-            const items = db[currentMode] || [];
-            items.forEach(item => {
-                if (item.name.toLowerCase().includes(query)) {
-                    const div = document.createElement('div');
-                    div.className = item.isCfg ? 'card config-item' : 'card';
-                    
-                    if (item.isCfg) {
-                        div.innerHTML = `
-                            <div style="display:flex; flex-direction:column">
-                                <span style="font-size:10px; color:#5c5c6d">${item.date}</span>
-                                <span>${item.name}</span>
-                            </div>
-                            <div class="dl-icon">📥</div>
-                        `;
-                    } else {
-                        div.innerHTML = `
-                            <span>${item.name}</span>
-                            <div class="tog ${item.state ? 'active' : ''}" onclick="item.state=!item.state; this.classList.toggle('active')"></div>
-                        `;
+            // 2. Фильтруем данные
+            // Если поиск пустой — показываем только текущую категорию
+            // Если в поиске что-то есть — ищем ВЕЗДЕ
+            const filtered = database.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(query);
+                if (query !== "") return matchSearch; 
+                return item.cat === currentCategory;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-results">Ничего не найдено</div>';
+                return;
+            }
+
+            // 3. Выводим карточки
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                if (item.cat === 'configs') card.style.gridColumn = "span 2";
+
+                const isSearchMode = query !== "";
+
+                card.innerHTML = `
+                    <div style="display:flex; flex-direction:column">
+                        ${isSearchMode ? `<span class="category-tag">${item.cat}</span>` : ''}
+                        <span style="font-size:10px; color:#5c5c6d">${item.date || ''}</span>
+                        <span style="font-weight:500">${item.name}</span>
+                    </div>
+                    ${item.cat === 'configs' 
+                        ? '<div style="background:#252533; padding:8px; border-radius:8px">📥</div>' 
+                        : `<div class="switch ${item.state?'active':''}" onclick="item.state=!item.state; this.classList.toggle('active')"></div>`
                     }
-                    listContainer.appendChild(div);
-                }
+                `;
+                container.appendChild(card);
             });
         }
 
-        // Ключевой момент: слушаем ввод
-        searchInput.addEventListener('input', render);
-
-        function setMode(mode, idx) {
-            currentMode = mode;
-            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.dock-btn')[idx === 4 ? 2 : idx].classList.add('active');
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.getElementById('globalSearch').value = ""; // Очищаем поиск при смене вкладки вручную
+            
+            // Обновляем док
+            document.querySelectorAll('.dock-btn').forEach((btn, i) => {
+                btn.classList.remove('active');
+                if (cat === 'visuals' && i === 0) btn.classList.add('active');
+                if (cat === 'hud' && i === 1) btn.classList.add('active');
+                if (cat === 'configs' && i === 2) btn.classList.add('active');
+            });
+            
             render();
         }
 
-        // Первый запуск
+        document.getElementById('globalSearch').oninput = render;
+
+        // Старт
         render();
     </script>
 </body>
