@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Pulse Visuals Full Interface</title>
+    <title>Pulse Visuals - Interactive Search</title>
     <style>
         :root {
             --bg-dark: #09090b;
@@ -15,9 +15,9 @@
         }
 
         body {
-            background: #050505; /* Фон как в игре */
+            background: radial-gradient(circle, #1a1a2e 0%, #050505 100%);
             color: var(--text-main);
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -27,18 +27,9 @@
             overflow: hidden;
         }
 
-        /* Логотип сверху */
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: bold; margin-bottom: 25px; }
         .logo span { color: var(--accent); font-size: 28px; }
 
-        /* Главное окно */
         .window {
             width: 820px;
             height: 480px;
@@ -51,16 +42,9 @@
             box-shadow: 0 25px 60px rgba(0,0,0,0.9);
         }
 
-        /* Шапка окна */
-        .header {
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .tabs { display: flex; gap: 20px; font-size: 14px; }
-        .tabs span { cursor: pointer; color: var(--text-dim); transition: 0.2s; }
+        .header { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .tabs { display: flex; gap: 15px; font-size: 14px; color: var(--text-dim); }
+        .tabs span { cursor: pointer; transition: 0.2s; }
         .tabs span.active { color: var(--text-main); }
 
         .search-area {
@@ -72,109 +56,30 @@
             gap: 8px;
             border: 1px solid #2a2a3a;
         }
-        .search-area input {
-            background: none; border: none; color: white; font-size: 13px; outline: none; width: 140px;
-        }
+        .search-area input { background: none; border: none; color: white; font-size: 13px; outline: none; width: 140px; }
 
-        /* Контентная область */
-        .content {
-            padding: 0 30px 20px 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            overflow-y: auto;
-            height: 100%;
-        }
+        .content { padding: 0 30px 20px 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; overflow-y: auto; height: 100%; }
+        
+        /* Стили для пустых результатов */
+        .no-results { grid-column: span 2; text-align: center; color: var(--text-dim); margin-top: 50px; font-style: italic; }
 
-        /* Карточка настройки */
-        .card {
-            background: var(--card-bg);
-            padding: 14px 20px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-        .card:hover { background: #1c1c26; }
+        .card { background: var(--card-bg); padding: 14px 20px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; transition: 0.2s; }
+        .card:hover { border-color: #313145; background: #1c1c26; }
         .card-label { font-size: 14px; font-weight: 500; }
 
-        /* Кастомная стрелочка (Download Icon) из конфигов */
-        .dl-icon {
-            width: 32px;
-            height: 32px;
-            background: #252533;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #a0a0b0;
-            transition: 0.2s;
-        }
-        .dl-icon:hover { background: var(--accent); color: white; }
-
-        /* Переключатель */
-        .tog {
-            width: 38px;
-            height: 20px;
-            background: #2a2a3a;
-            border-radius: 15px;
-            position: relative;
-            transition: 0.3s;
-        }
+        .tog { width: 38px; height: 20px; background: #2a2a3a; border-radius: 15px; position: relative; cursor: pointer; transition: 0.3s; }
         .tog.active { background: var(--accent); }
-        .tog::after {
-            content: '';
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            background: white;
-            border-radius: 50%;
-            top: 3px; left: 3px;
-            transition: 0.3s;
-        }
+        .tog::after { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: 0.3s; }
         .tog.active::after { left: 21px; }
 
-        /* Нижний Док */
-        .dock {
-            position: absolute;
-            bottom: -75px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 15, 20, 0.95);
-            padding: 10px 18px;
-            border-radius: 16px;
-            display: flex;
-            gap: 12px;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(8px);
-        }
+        .dl-icon { width: 32px; height: 32px; background: #252533; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #a0a0b0; cursor: pointer; }
+        .dl-icon:hover { background: var(--accent); color: white; }
 
-        .dock-btn {
-            width: 42px;
-            height: 42px;
-            background: #1c1c26;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            transition: 0.2s;
-            color: #888;
-        }
-        .dock-btn.active { background: var(--accent); color: white; }
+        .dock { position: absolute; bottom: -75px; left: 50%; transform: translateX(-50%); background: rgba(15, 15, 20, 0.95); padding: 10px 18px; border-radius: 16px; display: flex; gap: 12px; border: 1px solid var(--border); backdrop-filter: blur(8px); }
+        .dock-btn { width: 42px; height: 42px; background: #1c1c26; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; opacity: 0.6; }
+        .dock-btn.active { background: var(--accent); opacity: 1; }
 
-        /* Стили для меню Конфигураций */
-        .config-item {
-            grid-column: span 2;
-            border: 1px solid #2a2a3a;
-            background: rgba(22, 22, 29, 0.5);
-        }
-        .config-info { display: flex; flex-direction: column; }
-        .config-date { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; }
-
+        .config-item { grid-column: span 2; }
     </style>
 </head>
 <body>
@@ -182,33 +87,41 @@
     <div class="logo"><span>⚡</span> PulseVisuals</div>
 
     <div class="window">
-        <div class="header" id="window-header">
+        <div class="header">
+            <div class="tabs" id="tab-container">
+                </div>
+            <div class="search-area">
+                <span>🔍</span>
+                <input type="text" id="search-input" placeholder="Поиск" oninput="handleSearch()">
             </div>
+        </div>
 
         <div class="content" id="main-content">
             </div>
 
         <div class="dock">
-            <div class="dock-btn active" onclick="nav('visuals', 0)">⚙️</div>
-            <div class="dock-btn" onclick="nav('hud', 1)">🖼️</div>
-            <div class="dock-btn" onclick="nav('social', 2)">👥</div>
-            <div class="dock-btn" onclick="nav('box', 3)">🎁</div>
-            <div class="dock-btn" onclick="nav('configs', 4)">📄</div>
+            <div class="dock-btn active" title="Visuals" onclick="changeSection('visuals', 0)">⚙️</div>
+            <div class="dock-btn" title="HUD" onclick="changeSection('hud', 1)">🖼️</div>
+            <div class="dock-btn" title="Social" onclick="changeSection('social', 2)">👥</div>
+            <div class="dock-btn" title="Gifts" onclick="changeSection('box', 3)">🎁</div>
+            <div class="dock-btn" title="Configs" onclick="changeSection('configs', 4)">📄</div>
         </div>
     </div>
 
     <script>
-        // Данные для разделов
-        const data = {
+        // База данных элементов
+        const sections = {
             visuals: [
-                { name: "Animations", val: true }, { name: "Target ESP", val: true },
-                { name: "Trails", val: true }, { name: "World Customizer", val: true },
-                { name: "Full Bright", val: true }, { name: "Nimb", val: false },
-                { name: "Particles", val: false }, { name: "Render Tweaks", val: false }
+                { name: "Animations", active: true }, { name: "Target ESP", active: true },
+                { name: "Trails", active: true }, { name: "World Customizer", active: true },
+                { name: "Full Bright", active: true }, { name: "Nimb", active: false },
+                { name: "Particles", active: false }, { name: "Render Tweaks", active: false },
+                { name: "Block Overlay", active: true }, { name: "China Hat", active: false }
             ],
             hud: [
-                { name: "Watermark", val: true }, { name: "Effect Notify", val: true },
-                { name: "Armor HUD", val: false }, { name: "Target HUD", val: false }
+                { name: "Watermark", active: true }, { name: "Effect Notify", active: true },
+                { name: "Armor HUD", active: false }, { name: "Target HUD", active: false },
+                { name: "Potions", active: false }, { name: "Hotkeys", active: false }
             ],
             configs: [
                 { name: "Default", date: "10.02 14:28", isConfig: true },
@@ -217,34 +130,44 @@
             ]
         };
 
-        function render(section) {
+        let currentSection = 'visuals';
+
+        // Функция отрисовки
+        function renderContent(filter = '') {
             const container = document.getElementById('main-content');
-            const header = document.getElementById('window-header');
+            const tabContainer = document.getElementById('tab-container');
             container.innerHTML = '';
 
-            // Обновляем шапку
-            if (section === 'configs') {
-                header.innerHTML = `<span style="font-weight:bold">Конфигурации</span><div class="search-area">🔍<input type="text" placeholder="Поиск"></div>`;
+            // Обновляем вкладки
+            if (currentSection === 'configs') {
+                tabContainer.innerHTML = '<span style="color:white; font-weight:bold">Конфигурации</span>';
             } else {
-                header.innerHTML = `
-                    <div class="tabs">
-                        <span class="${section === 'visuals' ? 'active' : ''}" onclick="nav('visuals', 0)">Visuals</span> / 
-                        <span class="${section === 'hud' ? 'active' : ''}" onclick="nav('hud', 1)">HUD</span> / 
-                        <span>Utilities</span>
-                    </div>
-                    <div class="search-area">🔍<input type="text" placeholder="Поиск"></div>`;
+                tabContainer.innerHTML = `
+                    <span class="${currentSection === 'visuals' ? 'active' : ''}" onclick="changeSection('visuals', 0)">Visuals</span> / 
+                    <span class="${currentSection === 'hud' ? 'active' : ''}" onclick="changeSection('hud', 1)">HUD</span> / 
+                    <span>Utilities</span>
+                `;
             }
 
-            // Отрисовка элементов
-            const items = data[section] || [];
-            items.forEach(item => {
+            // Фильтруем данные
+            const items = sections[currentSection] || [];
+            const filteredItems = items.filter(item => 
+                item.name.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            if (filteredItems.length === 0) {
+                container.innerHTML = '<div class="no-results">Ничего не найдено...</div>';
+                return;
+            }
+
+            filteredItems.forEach(item => {
                 const div = document.createElement('div');
                 div.className = item.isConfig ? 'card config-item' : 'card';
                 
                 if (item.isConfig) {
                     div.innerHTML = `
-                        <div class="config-info">
-                            <span class="config-date">${item.date}</span>
+                        <div style="display:flex; flex-direction:column">
+                            <span style="font-size:10px; color:#5c5c6d; margin-bottom:4px">${item.date}</span>
                             <span class="card-label">${item.name}</span>
                         </div>
                         <div class="dl-icon">📥</div>
@@ -252,26 +175,33 @@
                 } else {
                     div.innerHTML = `
                         <span class="card-label">${item.name}</span>
-                        <div class="tog ${item.val ? 'active' : ''}" onclick="toggle(this)"></div>
+                        <div class="tog ${item.active ? 'active' : ''}" onclick="this.classList.toggle('active')"></div>
                     `;
                 }
                 container.appendChild(div);
             });
         }
 
-        function toggle(el) {
-            el.classList.toggle('active');
+        // Обработка ввода в поиск
+        function handleSearch() {
+            const query = document.getElementById('search-input').value;
+            renderContent(query);
         }
 
-        function nav(section, idx) {
-            // Активация кнопки в доке
+        // Переключение разделов (кнопки в доке)
+        function changeSection(name, btnIdx) {
+            currentSection = name;
+            // Очищаем поиск при переходе
+            document.getElementById('search-input').value = '';
+            // Активная кнопка в доке
             document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.dock-btn')[idx].classList.add('active');
-            render(section);
+            document.querySelectorAll('.dock-btn')[btnIdx].classList.add('active');
+            
+            renderContent();
         }
 
-        // Запуск
-        render('visuals');
+        // Инициализация
+        renderContent();
     </script>
 </body>
 </html>
