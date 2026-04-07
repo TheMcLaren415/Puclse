@@ -217,7 +217,7 @@
                         <span style="font-size:10px; color:#5c5c6d">${item.date || ''}</span>
                         <span style="font-weight:500">${item.name}</span>
                     </div>
-                    ${item.cat === 'configs' 
+                    ${item.cat === 'configurations' 
                         ? '<div style="background:#252533; padding:8px; border-radius:8px">📥</div>' 
                         : `<div class="switch ${item.state?'active':''}" onclick="item.state=!item.state; this.classList.toggle('active')"></div>`
                     }
