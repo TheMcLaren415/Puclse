@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulse Visuals - Gradient Look</title>
+    <style>
+        :root {
+            --accent: #7d5fff;
+            --bg-dark: #050505;
+            /* Основной фон окна с плавным переходом в фиолетовый внизу */
+            --panel-gradient: linear-gradient(180deg, #111116 0%, #111116 70%, #1a162d 100%);
+            --card-bg: rgba(22, 22, 29, 0.4);
+            --text-main: #ffffff;
+            --text-dim: #5c5c6d;
+            --border: rgba(125, 95, 255, 0.1);
+        }
+
+        body {
+            background: #050505;
+            color: var(--text-main);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .window {
+            width: 850px;
+            height: 520px;
+            background: var(--panel-gradient);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9), 
+                        inset 0 -20px 50px rgba(125, 95, 255, 0.05); /* Внутренний отсвет */
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 35px 45px 15px 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tabs { display: flex; gap: 25px; font-size: 14px; color: var(--text-dim); }
+        .tabs span { cursor: pointer; transition: 0.3s; font-weight: 500; letter-spacing: 0.5px; }
+        .tabs span.active { color: var(--text-main); text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+
+        .search-area {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 18px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .search-area input {
+            background: none; border: none; color: white; font-size: 13px; outline: none; width: 160px;
+        }
+
+        .content {
+            padding: 10px 45px 100px 45px; /* Больше отступ снизу для дока */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        /* Тонкие карточки как на фото */
+        .card {
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.02);
+            transition: 0.3s;
+        }
+        .card:hover { 
+            background: rgba(125, 95, 255, 0.05); 
+            border-color: rgba(125, 95, 255, 0.2); 
+        }
+
+        .card-label { font-size: 14px; color: #ccc; }
+
+        /* Переключатель */
+        .switch {
+            width: 40px; height: 20px;
+            background: #252530; border-radius: 20px;
+            position: relative; cursor: pointer; transition: 0.4s;
+        }
+        .switch.active { background: var(--accent); box-shadow: 0 0 15px rgba(125, 95, 255, 0.5); }
+        .switch::after {
+            content: ''; position: absolute; width: 14px; height: 14px;
+            background: white; border-radius: 50%; top: 3px; left: 3px; transition: 0.3s;
+        }
+        .switch.active::after { left: 23px; }
+
+        /* Нижний Док с фиолетовым свечением */
+        .dock {
+            position: absolute; 
+            bottom: 25px; 
+            left: 50%;
+            transform: translateX(-50%); 
+            background: rgba(15, 15, 22, 0.8);
+            padding: 10px 20px; 
+            border-radius: 20px; 
+            display: flex; 
+            gap: 12px;
+            border: 1px solid rgba(125, 95, 255, 0.2); 
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(125, 95, 255, 0.15); /* Внешнее свечение */
+        }
+
+        .dock-btn {
+            width: 46px; height: 46px;
+            background: rgba(255,255,255,0.03); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; opacity: 0.4; transition: 0.4s;
+        }
+        .dock-btn.active { 
+            background: var(--accent); 
+            opacity: 1; 
+            color: white; 
+            box-shadow: 0 0 20px rgba(125, 95, 255, 0.4);
+        }
+
+        .config-item { grid-column: span 2; }
+    </style>
+</head>
+<body>
+
+    <div class="window">
+        <div class="header">
+            <div class="tabs" id="tab-ui"></div>
+            <div class="search-area">
+                <input type="text" id="global-search" placeholder="Поиск">
+            </div>
+        </div>
+
+        <div class="content" id="list"></div>
+
+        <div class="dock">
+            <div class="dock-btn active" onclick="nav('visuals', 0)">⚙️</div>
+            <div class="dock-btn" onclick="nav('hud', 1)">🖼️</div>
+            <div class="dock-btn" onclick="nav('configs', 2)">📄</div>
+        </div>
+    </div>
+
+    <script>
+        const db = {
+            visuals: [
+                { name: "Nimb", enabled: true }, { name: "No Fluid", enabled: true },
+                { name: "Particles", enabled: true }, { name: "Render Tweaks", enabled: true },
+                { name: "Self Nametag", enabled: true }, { name: "Target ESP", enabled: true },
+                { name: "Time Changer", enabled: true }, { name: "Trails", enabled: true },
+                { name: "World Customizer", enabled: true }, { name: "World Particles", enabled: true }
+            ],
+            hud: [
+                { name: "Watermark", enabled: true }, { name: "Armor HUD", enabled: true },
+                { name: "Effect Notify", enabled: true }, { name: "Hotkeys", enabled: true }
+            ],
+            configs: [
+                { name: "Main Profile", isCfg: true }, { name: "Legit v2", isCfg: true }
+            ]
+        };
+
+        let currentTab = 'visuals';
+
+        function render() {
+            const list = document.getElementById('list');
+            const tabUi = document.getElementById('tab-ui');
+            const query = document.getElementById('global-search').value.toLowerCase();
+            list.innerHTML = '';
+
+            tabUi.innerHTML = `
+                <span class="${currentTab==='visuals'?'active':''}" onclick="nav('visuals',0)">Visuals</span>
+                <span class="${currentTab==='hud'?'active':''}" onclick="nav('hud',1)">HUD</span>
+                <span class="${currentTab==='configs'?'active':''}" onclick="nav('configs',2)">Configs</span>
+            `;
+
+            let items = query === "" ? db[currentTab] : [...db.visuals, ...db.hud, ...db.configs].filter(i => i.name.toLowerCase().includes(query));
+
+            items.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = item.isCfg ? 'card config-item' : 'card';
+                const control = item.isCfg ? '📥' : `<div class="switch ${item.enabled ? 'active' : ''}" onclick="toggleStatus('${item.name}')"></div>`;
+                card.innerHTML = `<span class="card-label">${item.name}</span> ${control}`;
+                list.appendChild(card);
+            });
+        }
+
+        function toggleStatus(n) {
+            ['visuals', 'hud'].forEach(c => { const i = db[c].find(x => x.name === n); if(i) i.enabled = !i.enabled; });
+            render();
+        }
+
+        function nav(c, i) {
+            currentTab = c;
+            document.querySelectorAll('.dock-btn').forEach((b, k) => b.classList.toggle('active', k === i));
+            render();
+        }
+
+        document.getElementById('global-search').oninput = render;
+        render();
+    </script>
+</body>
+</html>
