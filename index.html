@@ -2,22 +2,22 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>PulseVisuals Interface</title>
+    <title>Pulse Visuals Full Interface</title>
     <style>
         :root {
-            --bg-color: #0c0c0e;
-            --panel-color: #111116;
-            --card-color: #16161d;
-            --accent-color: #7d5fff; /* Тот самый фиолетовый */
+            --bg-dark: #09090b;
+            --panel-bg: #111116;
+            --card-bg: #16161d;
+            --accent: #7d5fff;
             --text-main: #ffffff;
             --text-dim: #5c5c6d;
-            --search-bg: #1a1a23;
+            --border: #22222e;
         }
 
         body {
-            background: radial-gradient(circle, #1a1a2e 0%, #050505 100%);
+            background: #050505; /* Фон как в игре */
             color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -27,262 +27,251 @@
             overflow: hidden;
         }
 
-        /* Верхний логотип */
-        .header-logo {
+        /* Логотип сверху */
+        .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            font-size: 24px;
+            gap: 8px;
+            font-size: 22px;
             font-weight: bold;
+            margin-bottom: 25px;
         }
+        .logo span { color: var(--accent); font-size: 28px; }
 
-        .pulse-icon {
-            color: var(--accent-color);
-            font-size: 30px;
-        }
-
-        /* Основное окно */
-        .main-window {
-            width: 850px;
-            height: 500px;
-            background-color: var(--panel-color);
-            border-radius: 15px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        /* Главное окно */
+        .window {
+            width: 820px;
+            height: 480px;
+            background: var(--panel-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             position: relative;
-            border: 1px solid #1f1f2e;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.9);
         }
 
-        /* Верхняя панель: Вкладки и Поиск */
-        .top-bar {
+        /* Шапка окна */
+        .header {
             padding: 20px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .nav-tabs {
-            display: flex;
-            gap: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
+        .tabs { display: flex; gap: 20px; font-size: 14px; }
+        .tabs span { cursor: pointer; color: var(--text-dim); transition: 0.2s; }
+        .tabs span.active { color: var(--text-main); }
 
-        .nav-tabs span {
-            cursor: pointer;
-            color: var(--text-dim);
-            transition: 0.3s;
-        }
-
-        .nav-tabs span.active {
-            color: var(--text-main);
-        }
-
-        .nav-tabs span:hover {
-            color: var(--text-main);
-        }
-
-        .search-box {
-            background: var(--search-bg);
-            border-radius: 8px;
+        .search-area {
+            background: #1a1a23;
             padding: 6px 12px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
-            width: 180px;
             border: 1px solid #2a2a3a;
         }
-
-        .search-box input {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 13px;
-            outline: none;
-            width: 100%;
+        .search-area input {
+            background: none; border: none; color: white; font-size: 13px; outline: none; width: 140px;
         }
 
-        /* Сетка настроек */
-        .content-grid {
+        /* Контентная область */
+        .content {
+            padding: 0 30px 20px 30px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 0 30px 30px 30px;
+            gap: 12px;
             overflow-y: auto;
+            height: 100%;
         }
 
+        /* Карточка настройки */
         .card {
-            background: var(--card-color);
-            border-radius: 12px;
-            padding: 16px 20px;
+            background: var(--card-bg);
+            padding: 14px 20px;
+            border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid transparent;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .card:hover { background: #1c1c26; }
+        .card-label { font-size: 14px; font-weight: 500; }
+
+        /* Кастомная стрелочка (Download Icon) из конфигов */
+        .dl-icon {
+            width: 32px;
+            height: 32px;
+            background: #252533;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0a0b0;
             transition: 0.2s;
         }
-
-        .card:hover {
-            border-color: #313145;
-            background: #1c1c26;
-        }
-
-        .card-name {
-            font-size: 14px;
-            font-weight: 500;
-        }
+        .dl-icon:hover { background: var(--accent); color: white; }
 
         /* Переключатель */
-        .switch {
-            width: 40px;
-            height: 22px;
+        .tog {
+            width: 38px;
+            height: 20px;
             background: #2a2a3a;
-            border-radius: 20px;
+            border-radius: 15px;
             position: relative;
-            cursor: pointer;
             transition: 0.3s;
         }
-
-        .switch.on {
-            background: var(--accent-color);
-        }
-
-        .switch::after {
+        .tog.active { background: var(--accent); }
+        .tog::after {
             content: '';
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             background: white;
             border-radius: 50%;
-            top: 3px;
-            left: 3px;
+            top: 3px; left: 3px;
             transition: 0.3s;
         }
+        .tog.active::after { left: 21px; }
 
-        .switch.on::after {
-            left: 21px;
-        }
-
-        /* Нижний док (Navigation Bar) */
-        .bottom-dock {
+        /* Нижний Док */
+        .dock {
             position: absolute;
-            bottom: -70px;
+            bottom: -75px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(17, 17, 22, 0.9);
-            padding: 10px 20px;
-            border-radius: 18px;
+            background: rgba(15, 15, 20, 0.95);
+            padding: 10px 18px;
+            border-radius: 16px;
             display: flex;
-            gap: 15px;
-            border: 1px solid #282836;
-            backdrop-filter: blur(10px);
+            gap: 12px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(8px);
         }
 
-        .dock-item {
-            width: 40px;
-            height: 40px;
+        .dock-btn {
+            width: 42px;
+            height: 42px;
             background: #1c1c26;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            font-size: 18px;
             transition: 0.2s;
+            color: #888;
         }
+        .dock-btn.active { background: var(--accent); color: white; }
 
-        .dock-item.active {
-            background: var(--accent-color);
+        /* Стили для меню Конфигураций */
+        .config-item {
+            grid-column: span 2;
+            border: 1px solid #2a2a3a;
+            background: rgba(22, 22, 29, 0.5);
         }
+        .config-info { display: flex; flex-direction: column; }
+        .config-date { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; }
 
-        .dock-item:hover:not(.active) {
-            background: #2a2a3a;
-        }
-
-        /* Скроллбар */
-        .content-grid::-webkit-scrollbar { width: 5px; }
-        .content-grid::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="header-logo">
-        <span class="pulse-icon">⚡</span> PulseVisuals
-    </div>
+    <div class="logo"><span>⚡</span> PulseVisuals</div>
 
-    <div class="main-window">
-        <div class="top-bar">
-            <div class="nav-tabs">
-                <span onclick="showTab('visuals')" id="tab-visuals">Visuals</span>
-                <span onclick="showTab('hud')" id="tab-hud" class="active">HUD</span>
-                <span id="tab-utilities">Utilities</span>
-            </div>
-            <div class="search-box">
-                <span style="font-size: 12px; color: #5c5c6d;">🔍</span>
-                <input type="text" placeholder="Поиск">
-            </div>
-        </div>
-
-        <div class="content-grid" id="content">
+    <div class="window">
+        <div class="header" id="window-header">
             </div>
 
-        <div class="bottom-dock">
-            <div class="dock-item active">⚙️</div>
-            <div class="dock-item">👤</div>
-            <div class="dock-item">👥</div>
-            <div class="dock-item">🎁</div>
-            <div class="dock-item">📜</div>
+        <div class="content" id="main-content">
+            </div>
+
+        <div class="dock">
+            <div class="dock-btn active" onclick="nav('visuals', 0)">⚙️</div>
+            <div class="dock-btn" onclick="nav('hud', 1)">🖼️</div>
+            <div class="dock-btn" onclick="nav('social', 2)">👥</div>
+            <div class="dock-btn" onclick="nav('box', 3)">🎁</div>
+            <div class="dock-btn" onclick="nav('configs', 4)">📄</div>
         </div>
     </div>
 
     <script>
-        const visualsData = [
-            { name: "Animations", state: true },
-            { name: "Aspect Ratio", state: true },
-            { name: "Block Overlay", state: true },
-            { name: "China Hat", state: false },
-            { name: "Crosshair", state: false },
-            { name: "Custom Hand", state: false },
-            { name: "Full Bright", state: true },
-            { name: "Hit Bubble", state: false },
-            { name: "Hit Color", state: true },
-            { name: "Hit Sounds", state: true }
-        ];
+        // Данные для разделов
+        const data = {
+            visuals: [
+                { name: "Animations", val: true }, { name: "Target ESP", val: true },
+                { name: "Trails", val: true }, { name: "World Customizer", val: true },
+                { name: "Full Bright", val: true }, { name: "Nimb", val: false },
+                { name: "Particles", val: false }, { name: "Render Tweaks", val: false }
+            ],
+            hud: [
+                { name: "Watermark", val: true }, { name: "Effect Notify", val: true },
+                { name: "Armor HUD", val: false }, { name: "Target HUD", val: false }
+            ],
+            configs: [
+                { name: "Default", date: "10.02 14:28", isConfig: true },
+                { name: "Анимчик • Anim4k", date: "11.02 10:12", isConfig: true },
+                { name: "Флерни • Flerni", date: "12.02 16:12", isConfig: true }
+            ]
+        };
 
-        const hudData = [
-            { name: "Armor HUD", state: false },
-            { name: "Cooldowns HUD", state: false },
-            { name: "Effect Notify", state: true },
-            { name: "Hotkeys", state: false },
-            { name: "Potions", state: false },
-            { name: "Saturation HUD", state: false },
-            { name: "Target HUD", state: false },
-            { name: "Watermark", state: true }
-        ];
-
-        function render(data) {
-            const container = document.getElementById('content');
+        function render(section) {
+            const container = document.getElementById('main-content');
+            const header = document.getElementById('window-header');
             container.innerHTML = '';
-            data.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <span class="card-name">${item.name}</span>
-                    <div class="switch ${item.state ? 'on' : ''}" onclick="this.classList.toggle('on')"></div>
-                `;
-                container.appendChild(card);
+
+            // Обновляем шапку
+            if (section === 'configs') {
+                header.innerHTML = `<span style="font-weight:bold">Конфигурации</span><div class="search-area">🔍<input type="text" placeholder="Поиск"></div>`;
+            } else {
+                header.innerHTML = `
+                    <div class="tabs">
+                        <span class="${section === 'visuals' ? 'active' : ''}" onclick="nav('visuals', 0)">Visuals</span> / 
+                        <span class="${section === 'hud' ? 'active' : ''}" onclick="nav('hud', 1)">HUD</span> / 
+                        <span>Utilities</span>
+                    </div>
+                    <div class="search-area">🔍<input type="text" placeholder="Поиск"></div>`;
+            }
+
+            // Отрисовка элементов
+            const items = data[section] || [];
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = item.isConfig ? 'card config-item' : 'card';
+                
+                if (item.isConfig) {
+                    div.innerHTML = `
+                        <div class="config-info">
+                            <span class="config-date">${item.date}</span>
+                            <span class="card-label">${item.name}</span>
+                        </div>
+                        <div class="dl-icon">📥</div>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <span class="card-label">${item.name}</span>
+                        <div class="tog ${item.val ? 'active' : ''}" onclick="toggle(this)"></div>
+                    `;
+                }
+                container.appendChild(div);
             });
         }
 
-        function showTab(type) {
-            document.querySelectorAll('.nav-tabs span').forEach(s => s.classList.remove('active'));
-            document.getElementById('tab-' + type).classList.add('active');
-            render(type === 'visuals' ? visualsData : hudData);
+        function toggle(el) {
+            el.classList.toggle('active');
         }
 
-        // По умолчанию открываем HUD, как на втором скрине
-        showTab('hud');
+        function nav(section, idx) {
+            // Активация кнопки в доке
+            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.dock-btn')[idx].classList.add('active');
+            render(section);
+        }
+
+        // Запуск
+        render('visuals');
     </script>
 </body>
 </html>
