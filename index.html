@@ -142,7 +142,7 @@
         <div class="dock">
             <div class="dock-btn active" onclick="setCategory('visuals')">⚙️</div>
             <div class="dock-btn" onclick="setCategory('hud')">🖼️</div>
-            <div class="dock-btn" onclick="setCategory('configs')">📄</div>
+            <div class="dock-btn" onclick="setCategory('configurations')">📄</div>
         </div>
     </div>
 
@@ -180,8 +180,8 @@
                 } else {
                     tabsUi.innerHTML = `
                         <span class="${currentCategory==='visuals'?'active':''}" onclick="setCategory('visuals')">Visuals</span> / 
-                        <span class="${currentCategory==='hud'?'active':''}" onclick="setCategory('hud')">HUD</span>
-                        <span class="${currentCategory==='configuration'?'active':''}" onclick="setCategory('configs')">Configs</span> / 
+                        <span class="${currentCategory==='hud'?'active':''}" onclick="setCategory('hud')">HUD</span> / 
+                        <span class="${currentCategory==='configuration'?'active':''}" onclick="setCategory('configurations')">Configurations</span>
 
                     `;
                 }
@@ -207,7 +207,7 @@
             filtered.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                if (item.cat === 'configs') card.style.gridColumn = "span 2";
+                if (item.cat === 'configurations') card.style.gridColumn = "span 2";
 
                 const isSearchMode = query !== "";
 
@@ -235,7 +235,7 @@
                 btn.classList.remove('active');
                 if (cat === 'visuals' && i === 0) btn.classList.add('active');
                 if (cat === 'hud' && i === 1) btn.classList.add('active');
-                if (cat === 'configs' && i === 1) btn.classList.add('active');
+                if (cat === 'configurations' && i === 1) btn.classList.add('active');
             });
             
             render();
